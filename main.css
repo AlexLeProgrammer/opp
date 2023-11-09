@@ -1,0 +1,22 @@
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Roboto, sans-serif;
+    font-size: 1.5em;
+}
+
+canvas {
+    width: 95vh;
+    height: 95vh;
+    border: 5px solid grey;
+}
+
+.coorText {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+}
