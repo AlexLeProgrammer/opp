@@ -1,8 +1,4 @@
-/*
-* @author      Alex Etienne
-* @version     1.0
-* @since       2023-11-09
-*/
+// Main script
 
 "use strict";
 
@@ -22,9 +18,6 @@ let coortext = document.querySelector(".coorText");
 const GRID_SIZE = 64;
 const GRID_CELL_SIZE = 150;
 const GRID_LINE_SIZE = 5;
-
-// Mouse
-const SENSIBILITY = 2;
 
 //#endregion
 
@@ -93,8 +86,9 @@ CANVAS.addEventListener("mousemove", (e) => {
         mouseY = e.clientY;
 
         // Get the distance of the movement of the mouse and add it multiplied by the sensibility to the grid gap
-        gridGapX -= e.movementX * SENSIBILITY;
-        gridGapY -= e.movementY * SENSIBILITY;
+        let canvasRect = CANVAS.getBoundingClientRect();
+        gridGapX -= e.movementX * CANVAS.width / canvasRect.width;
+        gridGapY -= e.movementY * CANVAS.height / canvasRect.height;
 
         // Block movement at the beginning of the grid
         if (gridGapX < 0) {
