@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     width: 100vw;
     height: 100vh;
@@ -19,4 +23,54 @@ canvas {
     position: absolute;
     top: 2%;
     left: 2%;
+}
+
+.right-part {
+    width: 300px;
+    height: 95vh;
+    position: absolute;
+    top: 2%;
+    right: 0;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.color-grid {
+    width: 50%;
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.right-part div div {
+    width: 100%;
+    aspect-ratio: 1;
+    transition: 300ms;
+}
+
+.right-part div div:hover {
+    transform: scale(110%);
+}
+
+.selectedColor {
+    border: 5px solid red;
+    transform: scale(115%);
+}
+
+input {
+    width: 50%;
+    height: 50px;
+    padding: 2px 5px;
+    background-color: grey;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: 300ms;
+}
+
+input:hover {
+    transform: scale(105%);
 }

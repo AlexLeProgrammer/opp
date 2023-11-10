@@ -34,3 +34,51 @@ onValue(ref(database, "test/"), (snapshot) => {
     const data = snapshot.val();
     console.log(data);
 });*/
+
+// Class
+class Cell {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+    }
+}
+
+// Map
+let map = [];
+
+// Create a new cell in the map
+function newCell(x, y, color) {
+    map.push(new Cell(x, y, color));
+    set(ref(database), {
+        map: map
+    });
+}
+
+// Returns the index of the cell located at the coordinates in parameters
+// If there isn't any cell, return -1
+function getCellIndex(x, y) {
+    for (let i = 0; i < map.length; i++) {
+        if (map[i].x === x && map[i].y === y) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Return the map
+function getLocalMap() {
+    return map;
+}
+
+export { newCell, getCellIndex, getLocalMap }
+
+// Update the local map if the map changed on the server
+onValue(ref(database), (data) => {
+    map = data.val().map;
+    console.log(map);
+});
+
+newCell(0, 0, "#000000");
+newCell(2, 0, "#000000");
+newCell(0, 2, "#000000");
