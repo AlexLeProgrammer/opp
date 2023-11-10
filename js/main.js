@@ -11,7 +11,7 @@ import { newCell, getCellIndex, getLocalMap } from "./multiplayerManager.js"
 const CANVAS = document.querySelector("canvas");
 CANVAS.width = 2000;
 CANVAS.height = 2000;
-
+const CANVAS_CLIENT = CANVAS.getBoundingClientRect();
 const CTX = CANVAS.getContext("2d");
 
 // Coordinates text
@@ -19,19 +19,28 @@ let coortext = document.querySelector(".coorText");
 
 // Grid
 const GRID_SIZE = 500;
-const DEFAULT_GRID_CELL_SIZE = 150;
-const DEFAULT_GRID_LINE_SIZE = 5;
+const GRID_CELL_SIZE = 150;
+const GRID_LINE_SIZE = 5;
 
 // Colors
 const COLORS_LIST = ["#2E86C1", "#3498DB", "#E74C3C", "#27AE60", "#F39C12", "#8E44AD", "#16A085", "#D35400"];
+
+const COLOR_BOXES = [
+    document.querySelector(".color-0"),
+    document.querySelector(".color-1"),
+    document.querySelector(".color-2"),
+    document.querySelector(".color-3"),
+    document.querySelector(".color-4"),
+    document.querySelector(".color-5"),
+    document.querySelector(".color-6"),
+    document.querySelector(".color-7")
+];
 
 //#endregion
 
 //#region VARIABLES
 
 // Grid
-let gridCellSize = DEFAULT_GRID_CELL_SIZE;
-let gridLineSize = DEFAULT_GRID_LINE_SIZE;
 let scale = 1;
 
 // Mouse
@@ -52,7 +61,13 @@ let selectedColor = 0;
 function Update() {
     //#region DRAW
 
-
+    // Find the selected color
+    for (let i = 0; i < COLOR_BOXES.length; i++) {
+        if (COLOR_BOXES[i].classList.contains("selectedColor")) {
+            selectedColor = i;
+            break;
+        }
+    }
 
     //#endregion
 
@@ -65,20 +80,26 @@ function Update() {
     let map = getLocalMap();
     for (let cell of map) {
         CTX.fillStyle = cell.color;
-        CTX.fillRect((cell.x * gridCellSize - gridGapX) * scale, (cell.y * gridCellSize - gridGapY) * scale, gridCellSize * scale, gridCellSize * scale);
+        CTX.fillRect((cell.x * GRID_CELL_SIZE - gridGapX) * scale, (cell.y * GRID_CELL_SIZE - gridGapY) * scale, GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
     }
+
+    // Draw selected cell
+    CTX.fillStyle = COLORS_LIST[selectedColor];
+    CTX.fillRect(Math.floor(((mouseX - CANVAS_CLIENT.x) * CANVAS.width / CANVAS_CLIENT.width - gridGapX) / GRID_CELL_SIZE) * GRID_CELL_SIZE / scale,
+        Math.floor(((mouseY - CANVAS_CLIENT.y) * CANVAS.height / CANVAS_CLIENT.height - gridGapY) / GRID_CELL_SIZE) * GRID_CELL_SIZE / scale,
+        GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
 
     // Draw the grid
     CTX.fillStyle = "grey";
 
     // Vertical lines
     for (let i = 0; i <= GRID_SIZE; i++) {
-        CTX.fillRect((i * gridCellSize - gridGapX) * scale, 0, gridLineSize * scale, CANVAS.height);
+        CTX.fillRect((i * GRID_CELL_SIZE - gridGapX) * scale, 0, GRID_LINE_SIZE * scale, CANVAS.height);
     }
 
     // Horizontal lines
     for (let i = 0; i <= GRID_SIZE; i++) {
-        CTX.fillRect(0, (i * gridCellSize - gridGapY) * scale, CANVAS.width, gridLineSize * scale);
+        CTX.fillRect(0, (i * GRID_CELL_SIZE - gridGapY) * scale, CANVAS.width, GRID_LINE_SIZE * scale);
     }
 
     //#endregion
@@ -112,15 +133,13 @@ CANVAS.addEventListener("mouseup", (e) => {
 
 // Mouse movement
 CANVAS.addEventListener("mousemove", (e) => {
+    // Get the position of the mouse
+    mouseX = e.clientX;
+    mouseY = e.clientY;
     if (mouseRightDown) {
-        // Get the position of the mouse
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
         // Get the distance of the movement of the mouse and add it multiplied by the sensibility to the grid gap
-        let canvasRect = CANVAS.getBoundingClientRect();
-        gridGapX -= e.movementX * CANVAS.width / canvasRect.width / scale;
-        gridGapY -= e.movementY * CANVAS.height / canvasRect.height / scale;
+        gridGapX -= e.movementX * CANVAS.width / CANVAS_CLIENT.width / scale;
+        gridGapY -= e.movementY * CANVAS.height / CANVAS_CLIENT.height / scale;
 
         // Block movement at the beginning of the grid
         if (gridGapX < 0) {
@@ -132,16 +151,16 @@ CANVAS.addEventListener("mousemove", (e) => {
         }
 
         // Block movement at the end of the grid
-        if (gridGapX > GRID_SIZE * gridCellSize - CANVAS.width) {
-            gridGapX = GRID_SIZE * gridCellSize - CANVAS.width;
+        if (gridGapX > GRID_SIZE * GRID_CELL_SIZE - CANVAS.width) {
+            gridGapX = GRID_SIZE * GRID_CELL_SIZE - CANVAS.width;
         }
 
-        if (gridGapY > GRID_SIZE * gridCellSize - CANVAS.height) {
-            gridGapY = GRID_SIZE * gridCellSize - CANVAS.height;
+        if (gridGapY > GRID_SIZE * GRID_CELL_SIZE - CANVAS.height) {
+            gridGapY = GRID_SIZE * GRID_CELL_SIZE - CANVAS.height;
         }
 
         // Update coordinates text's html with the actual coordinates
-        coortext.innerHTML = `Coordinate : X ${Math.floor(gridGapX / gridCellSize)}, Y ${Math.floor(gridGapY / gridCellSize)}`;
+        coortext.innerHTML = `Coordinate : X ${Math.floor(gridGapX / GRID_CELL_SIZE)}, Y ${Math.floor(gridGapY / GRID_CELL_SIZE)}`;
     }
 });
 
