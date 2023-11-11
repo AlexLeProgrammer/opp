@@ -56,7 +56,7 @@ canvas {
 }
 
 .selectedColor {
-    border: 5px solid red;
+    border: 5px solid red !important;
     transform: scale(115%);
 }
 
@@ -85,4 +85,10 @@ input:hover {
     border-radius: 20px;
     box-shadow: 0 0 30px 30px rgba(0, 0, 0, 0.5);
     text-align: center;
+}
+
+.material-symbols-outlined {
+    width: 100%;
+    font-size: 2em !important;
+    border: 5px solid grey;
 }

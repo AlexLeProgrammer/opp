@@ -3,7 +3,7 @@
 "use strict";
 
 // Import functions from multiplayerManager.js
-import { newCell, getCellIndex, getLocalMap } from "./multiplayerManager.js"
+import { newCell, removeCell, getLocalMap } from "./multiplayerManager.js"
 
 //#region CONSTANTS
 
@@ -33,7 +33,8 @@ const COLOR_BOXES = [
     document.querySelector(".color-4"),
     document.querySelector(".color-5"),
     document.querySelector(".color-6"),
-    document.querySelector(".color-7")
+    document.querySelector(".color-7"),
+    document.querySelector(".color-8")
 ];
 
 //#endregion
@@ -100,7 +101,7 @@ function Update() {
     }
 
     // Draw selected cell
-    if (!colorSelectorOpened) {
+    if (!colorSelectorOpened && selectedColor !== 8) {
         CTX.fillStyle = colorList[selectedColor];
         CTX.fillRect(selectedCellX, selectedCellY, GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
     }
@@ -119,6 +120,11 @@ function Update() {
         CTX.fillRect(0, (i * GRID_CELL_SIZE - gridGapY) * scale, CANVAS.width, GRID_LINE_SIZE * scale);
     }
 
+    // Draw the selected cell if we use the eraser
+    if (selectedColor === 8) {
+        CTX.strokeRect(selectedCellX, selectedCellY, GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
+    }
+
     //#endregion
 }
 
@@ -126,6 +132,9 @@ function Update() {
 for (let i = 0; i < colorList.length; i++) {
     document.querySelector(`.color-${i}`).style.backgroundColor = colorList[i];
 }
+
+// Define thickness the selected cell of the eraser
+CTX.lineWidth = 20;
 
 // Start the loop
 setInterval(Update, 1000 / 60);
@@ -136,7 +145,7 @@ setInterval(Update, 1000 / 60);
 // Release
 document.addEventListener("keyup", (e) => {
     // Open or close the color selector menu when we release space
-    if (e.code === "Space") {
+    if (e.code === "Space" && selectedColor !== 8) {
         if (!colorSelectorOpened) {
             document.querySelector(".color-selector").style.display = "block";
             COOR_TEXT.style.filter = "blur(1em)";
@@ -176,7 +185,12 @@ CANVAS.addEventListener("mouseup", (e) => {
 
     // Create a new cell where we click
     if (e.button === 0 && !colorSelectorOpened) {
-        newCell(Math.floor((selectedCellX / scale + gridGapX) / GRID_CELL_SIZE), Math.floor((selectedCellY / scale + gridGapY) / GRID_CELL_SIZE), colorList[selectedColor]);
+        if (selectedColor === 8) {
+            removeCell(Math.floor((selectedCellX / scale + gridGapX) / GRID_CELL_SIZE), Math.floor((selectedCellY / scale + gridGapY) / GRID_CELL_SIZE));
+        } else {
+            newCell(Math.floor((selectedCellX / scale + gridGapX) / GRID_CELL_SIZE), Math.floor((selectedCellY / scale + gridGapY) / GRID_CELL_SIZE),
+                colorList[selectedColor]);
+        }
     }
 });
 

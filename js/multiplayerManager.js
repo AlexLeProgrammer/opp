@@ -55,15 +55,17 @@ function newCell(x, y, color) {
     });
 }
 
-// Returns the index of the cell located at the coordinates in parameters
-// If there isn't any cell, return -1
-function getCellIndex(x, y) {
+// Remove the cell located at the coordinates in parameters
+function removeCell(x, y) {
     for (let i = 0; i < map.length; i++) {
         if (map[i].x === x && map[i].y === y) {
-            return i;
+            map.splice(i, 1);
+            set(ref(database), {
+                map: map
+            });
+            return;
         }
     }
-    return -1;
 }
 
 // Return the map
@@ -71,7 +73,7 @@ function getLocalMap() {
     return map;
 }
 
-export { newCell, getCellIndex, getLocalMap }
+export { newCell, removeCell, getLocalMap }
 
 // Update the local map if the map changed on the server
 onValue(ref(database), (data) => {
