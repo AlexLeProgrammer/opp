@@ -85,8 +85,10 @@ function Update() {
 
     // Draw selected cell
     CTX.fillStyle = COLORS_LIST[selectedColor];
-    CTX.fillRect(Math.floor(((mouseX - CANVAS_CLIENT.x) * CANVAS.width / CANVAS_CLIENT.width - gridGapX) / GRID_CELL_SIZE) * GRID_CELL_SIZE / scale,
-        Math.floor(((mouseY - CANVAS_CLIENT.y) * CANVAS.height / CANVAS_CLIENT.height - gridGapY) / GRID_CELL_SIZE) * GRID_CELL_SIZE / scale,
+    CTX.fillRect(Math.floor(((mouseX - CANVAS_CLIENT.x) * CANVAS.width / CANVAS_CLIENT.width + gridGapX % GRID_CELL_SIZE * scale)
+        / (GRID_CELL_SIZE * scale)) * GRID_CELL_SIZE * scale - gridGapX % GRID_CELL_SIZE * scale,
+        Math.floor(((mouseY - CANVAS_CLIENT.y) * CANVAS.height / CANVAS_CLIENT.height + gridGapY % GRID_CELL_SIZE * scale)
+            / (GRID_CELL_SIZE * scale)) * GRID_CELL_SIZE * scale - gridGapY % GRID_CELL_SIZE * scale,
         GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
 
     // Draw the grid
