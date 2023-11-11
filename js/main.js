@@ -49,6 +49,9 @@ let mouseRightDown = false;
 let mouseX = 0;
 let mouseY = 0;
 
+let selectedCellX = 0;
+let selectedCellY = 0;
+
 let gridGapX = 0;
 let gridGapY = 0;
 
@@ -71,6 +74,16 @@ function Update() {
         }
     }
 
+    // Calculate the position of the seleted cell
+    let canvasClient = CANVAS.getBoundingClientRect();
+    if (!colorSelectorOpened) {
+        selectedCellX = Math.floor(((mouseX - canvasClient.x) * CANVAS.width / canvasClient.width + gridGapX % GRID_CELL_SIZE * scale)
+            / (GRID_CELL_SIZE * scale)) * GRID_CELL_SIZE * scale - gridGapX % GRID_CELL_SIZE * scale;
+        selectedCellY = Math.floor(((mouseY - canvasClient.y) * CANVAS.height / canvasClient.height + gridGapY % GRID_CELL_SIZE * scale)
+            / (GRID_CELL_SIZE * scale)) * GRID_CELL_SIZE * scale - gridGapY % GRID_CELL_SIZE * scale;
+    }
+
+
     //#endregion
 
     //#region DISPLAY
@@ -82,18 +95,14 @@ function Update() {
     let map = getLocalMap();
     for (let cell of map) {
         CTX.fillStyle = cell.color;
-        CTX.fillRect((cell.x * GRID_CELL_SIZE - gridGapX) * scale, (cell.y * GRID_CELL_SIZE - gridGapY) * scale, GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
+        CTX.fillRect((cell.x * GRID_CELL_SIZE - gridGapX) * scale, (cell.y * GRID_CELL_SIZE - gridGapY) * scale,
+            GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
     }
 
     // Draw selected cell
     if (!colorSelectorOpened) {
-        let canvasClient = CANVAS.getBoundingClientRect();
         CTX.fillStyle = colorList[selectedColor];
-        CTX.fillRect(Math.floor(((mouseX - canvasClient.x) * CANVAS.width / canvasClient.width + gridGapX % GRID_CELL_SIZE * scale)
-            / (GRID_CELL_SIZE * scale)) * GRID_CELL_SIZE * scale - gridGapX % GRID_CELL_SIZE * scale,
-            Math.floor(((mouseY - canvasClient.y) * CANVAS.height / canvasClient.height + gridGapY % GRID_CELL_SIZE * scale)
-                / (GRID_CELL_SIZE * scale)) * GRID_CELL_SIZE * scale - gridGapY % GRID_CELL_SIZE * scale,
-            GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
+        CTX.fillRect(selectedCellX, selectedCellY, GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
     }
 
 
@@ -149,9 +158,10 @@ document.addEventListener("keyup", (e) => {
     }
 })
 
-// Mouse right-click
+// Mouse
 // Press
 CANVAS.addEventListener("mousedown", (e) => {
+    // Right-click
     if (e.button === 2) {
         mouseRightDown = true;
     }
@@ -159,8 +169,14 @@ CANVAS.addEventListener("mousedown", (e) => {
 
 // Release
 CANVAS.addEventListener("mouseup", (e) => {
+    // Right-click
     if (e.button === 2) {
         mouseRightDown = false;
+    }
+
+    // Create a new cell where we click
+    if (e.button === 0 && !colorSelectorOpened) {
+        newCell(Math.floor((selectedCellX / scale + gridGapX) / GRID_CELL_SIZE), Math.floor((selectedCellY / scale + gridGapY) / GRID_CELL_SIZE), colorList[selectedColor]);
     }
 });
 

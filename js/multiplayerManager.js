@@ -76,9 +76,4 @@ export { newCell, getCellIndex, getLocalMap }
 // Update the local map if the map changed on the server
 onValue(ref(database), (data) => {
     map = data.val().map;
-    console.log(map);
 });
-
-newCell(0, 0, "#000000");
-newCell(2, 0, "#000000");
-newCell(0, 2, "#000000");
