@@ -117,12 +117,12 @@ function Update() {
 
     // Vertical lines
     for (let i = 0; i <= CANVAS.width / (GRID_CELL_SIZE * scale); i++) {
-        CTX.fillRect((i * GRID_CELL_SIZE - gridGapX % (GRID_CELL_SIZE * scale)) * scale, 0, GRID_LINE_SIZE * scale, CANVAS.height);
+        CTX.fillRect((i * GRID_CELL_SIZE - gridGapX % GRID_CELL_SIZE) * scale, 0, GRID_LINE_SIZE * scale, CANVAS.height);
     }
 
     // Horizontal lines
     for (let i = 0; i <= CANVAS.height / (GRID_CELL_SIZE * scale); i++) {
-        CTX.fillRect(0, (i * GRID_CELL_SIZE - gridGapY % (GRID_CELL_SIZE * scale)) * scale, CANVAS.width, GRID_LINE_SIZE * scale);
+        CTX.fillRect(0, (i * GRID_CELL_SIZE - gridGapY % GRID_CELL_SIZE) * scale, CANVAS.width, GRID_LINE_SIZE * scale);
     }
 
     // Draw the selected cell if we use the eraser
@@ -223,7 +223,12 @@ CANVAS.addEventListener("mousemove", (e) => {
         gridGapY -= e.movementY * CANVAS.height / canvasClient.height / scale;
 
         // Update coordinates text's html with the actual coordinates
-        COOR_TEXT.innerHTML = `Coordinate : X ${Math.floor(gridGapX / GRID_CELL_SIZE)}, Y ${Math.floor(gridGapY / GRID_CELL_SIZE)}`;
+        if (document.querySelector("html").lang === "en") {
+            COOR_TEXT.innerHTML = `Coordinate : X ${Math.floor(gridGapX / GRID_CELL_SIZE)}, Y ${Math.floor(gridGapY / GRID_CELL_SIZE)}`;
+        } else {
+            COOR_TEXT.innerHTML = `Coordonnées : X ${Math.floor(gridGapX / GRID_CELL_SIZE)}, Y ${Math.floor(gridGapY / GRID_CELL_SIZE)}`;
+        }
+
     }
 });
 
