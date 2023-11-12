@@ -20,8 +20,10 @@ const COOR_TEXT = document.querySelector(".coorText");
 // Color selector
 const COLOR_SELECTOR = document.querySelector(".color-selector");
 
+// Help box
+const HELP_TEXT = document.querySelector(".help-text");
+
 // Grid
-const GRID_SIZE = 500;
 const GRID_CELL_SIZE = 150;
 const GRID_LINE_SIZE = 5;
 
@@ -61,6 +63,9 @@ let colorList = ["#2E86C1", "#3498DB", "#E74C3C", "#27AE60", "#F39C12", "#8E44AD
 let selectedColor = 0;
 let colorSelectorOpened = false;
 
+// Help box
+let helpOpened = false;
+
 //#endregion
 
 // Called every frame
@@ -77,7 +82,7 @@ function Update() {
 
     // Calculate the position of the seleted cell
     let canvasClient = CANVAS.getBoundingClientRect();
-    if (!colorSelectorOpened) {
+    if (!colorSelectorOpened && !helpOpened) {
         selectedCellX = Math.floor(((mouseX - canvasClient.x) * CANVAS.width / canvasClient.width + gridGapX % GRID_CELL_SIZE * scale)
             / (GRID_CELL_SIZE * scale)) * GRID_CELL_SIZE * scale - gridGapX % GRID_CELL_SIZE * scale;
         selectedCellY = Math.floor(((mouseY - canvasClient.y) * CANVAS.height / canvasClient.height + gridGapY % GRID_CELL_SIZE * scale)
@@ -101,7 +106,7 @@ function Update() {
     }
 
     // Draw selected cell
-    if (!colorSelectorOpened && selectedColor !== 8) {
+    if (!colorSelectorOpened && !helpOpened && selectedColor !== 8) {
         CTX.fillStyle = colorList[selectedColor];
         CTX.fillRect(selectedCellX, selectedCellY, GRID_CELL_SIZE * scale, GRID_CELL_SIZE * scale);
     }
@@ -111,13 +116,13 @@ function Update() {
     CTX.fillStyle = "grey";
 
     // Vertical lines
-    for (let i = 0; i <= GRID_SIZE; i++) {
-        CTX.fillRect((i * GRID_CELL_SIZE - gridGapX) * scale, 0, GRID_LINE_SIZE * scale, CANVAS.height);
+    for (let i = 0; i <= CANVAS.width / (GRID_CELL_SIZE * scale); i++) {
+        CTX.fillRect((i * GRID_CELL_SIZE - gridGapX % (GRID_CELL_SIZE * scale)) * scale, 0, GRID_LINE_SIZE * scale, CANVAS.height);
     }
 
     // Horizontal lines
-    for (let i = 0; i <= GRID_SIZE; i++) {
-        CTX.fillRect(0, (i * GRID_CELL_SIZE - gridGapY) * scale, CANVAS.width, GRID_LINE_SIZE * scale);
+    for (let i = 0; i <= CANVAS.height / (GRID_CELL_SIZE * scale); i++) {
+        CTX.fillRect(0, (i * GRID_CELL_SIZE - gridGapY % (GRID_CELL_SIZE * scale)) * scale, CANVAS.width, GRID_LINE_SIZE * scale);
     }
 
     // Draw the selected cell if we use the eraser
@@ -126,6 +131,22 @@ function Update() {
     }
 
     //#endregion
+}
+
+// Apply blur filter on everything except color-selector, help-box and body
+// The parameter active define if the function set the blur active or inactive, boolean
+function setBlur(active) {
+    if (active) {
+        COOR_TEXT.style.filter = "blur(1em)";
+        CANVAS.style.filter = "blur(1em)";
+        document.querySelector(".right-part").style.filter = "blur(1em)";
+        HELP_TEXT.style.filter = "blur(1em)";
+    } else {
+        COOR_TEXT.style.filter = "none";
+        CANVAS.style.filter = "none";
+        document.querySelector(".right-part").style.filter = "none";
+        HELP_TEXT.style.filter = "none";
+    }
 }
 
 // Set the color of all the colors box
@@ -145,17 +166,13 @@ setInterval(Update, 1000 / 60);
 // Release
 document.addEventListener("keyup", (e) => {
     // Open or close the color selector menu when we release space
-    if (e.code === "Space" && selectedColor !== 8) {
+    if (e.code === "Space" && !helpOpened && selectedColor !== 8) {
         if (!colorSelectorOpened) {
             document.querySelector(".color-selector").style.display = "block";
-            COOR_TEXT.style.filter = "blur(1em)";
-            CANVAS.style.filter = "blur(1em)";
-            document.querySelector(".right-part").style.filter = "blur(1em)";
+            setBlur(true);
         } else {
             document.querySelector(".color-selector").style.display = "none";
-            COOR_TEXT.style.filter = "none";
-            CANVAS.style.filter = "none";
-            document.querySelector(".right-part").style.filter = "none";
+            setBlur(false);
 
             // Set the color of all the colors box
             colorList[selectedColor] = document.querySelector(".color-selector input").value;
@@ -184,7 +201,7 @@ CANVAS.addEventListener("mouseup", (e) => {
     }
 
     // Create a new cell where we click
-    if (e.button === 0 && !colorSelectorOpened) {
+    if (e.button === 0 && !colorSelectorOpened && !helpOpened) {
         if (selectedColor === 8) {
             removeCell(Math.floor((selectedCellX / scale + gridGapX) / GRID_CELL_SIZE), Math.floor((selectedCellY / scale + gridGapY) / GRID_CELL_SIZE));
         } else {
@@ -205,24 +222,6 @@ CANVAS.addEventListener("mousemove", (e) => {
         gridGapX -= e.movementX * CANVAS.width / canvasClient.width / scale;
         gridGapY -= e.movementY * CANVAS.height / canvasClient.height / scale;
 
-        // Block movement at the beginning of the grid
-        if (gridGapX < 0) {
-            gridGapX = 0;
-        }
-
-        if (gridGapY < 0) {
-            gridGapY = 0;
-        }
-
-        // Block movement at the end of the grid
-        if (gridGapX > GRID_SIZE * GRID_CELL_SIZE - CANVAS.width) {
-            gridGapX = GRID_SIZE * GRID_CELL_SIZE - CANVAS.width;
-        }
-
-        if (gridGapY > GRID_SIZE * GRID_CELL_SIZE - CANVAS.height) {
-            gridGapY = GRID_SIZE * GRID_CELL_SIZE - CANVAS.height;
-        }
-
         // Update coordinates text's html with the actual coordinates
         COOR_TEXT.innerHTML = `Coordinate : X ${Math.floor(gridGapX / GRID_CELL_SIZE)}, Y ${Math.floor(gridGapY / GRID_CELL_SIZE)}`;
     }
@@ -236,6 +235,23 @@ CANVAS.addEventListener("wheel", (e) => {
     if (scale < 0.1) {
         scale = 0.1;
     }
+});
+
+// Help box
+// Open the help box
+HELP_TEXT.addEventListener("click", () => {
+    if (!colorSelectorOpened && !helpOpened) {
+        helpOpened = true;
+        document.querySelector(".help-box").style.display = "block";
+        setBlur(true);
+    }
+});
+
+// Close the help box
+document.querySelector(".close-help").addEventListener("click", () => {
+    helpOpened = false;
+    document.querySelector(".help-box").style.display = "none";
+    setBlur(false);
 });
 
 //#endregion

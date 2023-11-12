@@ -2,46 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Online Painting Project</title>
+    <title>Choose a Language</title>
     <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./icon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="./icon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./icon/favicon-16x16.png">
-    <link rel="manifest" href="./icon/site.webmanifest">
 </head>
-<body oncontextmenu="return false">
-    <p class="coorText">Coordinate : X 0, Y 0</p>
-    
-    <canvas></canvas>
-    
-    <div class="right-part">
-        <div class="color-grid">
-            <div class="color-0 selectedColor" onclick="selectColor(0)"></div>
-            <div class="color-1" onclick="selectColor(1)"></div>
-            <div class="color-2" onclick="selectColor(2)"></div>
-            <div class="color-3" onclick="selectColor(3)"></div>
-            <div class="color-4" onclick="selectColor(4)"></div>
-            <div class="color-5" onclick="selectColor(5)"></div>
-            <div class="color-6" onclick="selectColor(6)"></div>
-            <div class="color-7" onclick="selectColor(7)"></div>
-            <div class="color-8 material-symbols-outlined" onclick="selectColor(8)">ink_eraser</div>
-        </div>
-    </div>
-
-    <div class="color-selector" style="display: none;">
-        <h1>Choose a color</h1>
-        <input type="color">
-    </div>
-
-    <script src="./js/multiplayerManager.js" type="module"></script>
-    <script src="./js/main.js" type="module"></script>
-    <script>
-        // Select the color in parameters
-        function selectColor(colorId) {
-            document.querySelector(".selectedColor").classList.remove("selectedColor");
-            document.querySelector(`.color-${colorId}`).classList.add("selectedColor");
+<body>
+    <h1>Choose a language :</h1>
+    <a href="./en"><img src="https://flagicons.lipis.dev/flags/4x3/gb.svg"></a>
+    <a href="./fr"><img src="https://flagicons.lipis.dev/flags/4x3/fr.svg"></a>
+    <style>
+        body {
+            gap: 100px;
         }
-    </script>
+
+        h1 {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        img {
+            width: 200px;
+            box-shadow: 0 0 50px 15px rgba(0, 0, 0, 0.5);
+            transition: 300ms;
+        }
+
+        img:hover {
+            transform: scale(110%);
+        }
+    </style>
 </body>
 </html>
